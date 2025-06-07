@@ -4,7 +4,7 @@ const User = require("../../model/schema/user");
 
 const add = async (req, res) => {
   try {
-    const { attendes, attendesLead, agenda, location, related, notes } = req.body;
+    const { attendes, attendesLead, agenda, location, related, notes,timestamp} = req.body;
 
     if (!agenda) {
       return res.status(400).json({ error: "Agenda is required" });
@@ -19,6 +19,7 @@ const add = async (req, res) => {
       agenda,
       location,
       related,
+      timestamp,
       notes,
       createBy: user._id,
     });
@@ -33,7 +34,13 @@ const add = async (req, res) => {
 
 const index = async (req, res) => {
   try {
-    const result = await MeetingHistory.find({});
+    const {createBy} =req.query
+    let result = []
+    if(createBy){
+      result = await MeetingHistory.find({createBy});
+    }else{
+      result = await MeetingHistory.find({});
+    }
     res.status(200).json(result);
   } catch (err) {
     console.error("Failed to get :", err);
@@ -66,6 +73,8 @@ const deleteData = async (req, res) => {
 
 const deleteMany = async (req, res) => {
   try {
+    console.log("req.body", req.body);
+    
     const result = await MeetingHistory.updateMany({ _id: { $in: req.body } }, { $set: { deleted: true } }); 
     res.status(200).json(result);
   } catch (err) {

@@ -14,7 +14,7 @@ const CommonDeleteModel = (props) => {
     const handleClose = () => {
         onClose()
     }
-
+    
     return (
         <div>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>

@@ -6,7 +6,7 @@ export const MeetingSchema = yup.object({
     attendesLead: yup.array().of(yup.string().trim()),
     location: yup.string(),
     related: yup.string(),
-    dateTime: yup.string().required("Date Time Is required"),
+    timestamp: yup.string().required("Date Time Is required"),
     notes: yup.string(),
     createFor: yup.string(),
     createdBy: yup.string(),

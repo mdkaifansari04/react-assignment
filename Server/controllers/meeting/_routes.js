@@ -8,6 +8,6 @@ router.post("/add", auth, meeting.add);
 router.get("/", auth, meeting.index);
 router.get("/view/:id", auth,meeting.view);
 router.delete("/delete/:id", auth, meeting.deleteData);
-router.delete("/delete-many", auth, meeting.deleteMany);
+router.post("/delete-many", meeting.deleteMany);
 
 module.exports = router;

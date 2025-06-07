@@ -1,4 +1,4 @@
-import { Button, Flex, FormLabel, Grid, GridItem, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, Textarea } from '@chakra-ui/react';
+import { Button, Flex, FormLabel, Grid, GridItem, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Stack, Text, Textarea, Checkbox, For, HStack} from '@chakra-ui/react';
 import { CUIAutoComplete } from 'chakra-ui-autocomplete';
 import MultiContactModel from 'components/commonTableModel/MultiContactModel';
 import MultiLeadModel from 'components/commonTableModel/MultiLeadModel';
@@ -21,12 +21,8 @@ const AddMeeting = (props) => {
     const [leadModelOpen, setLeadModel] = useState(false);
     const todayTime = new Date().toISOString().split('.')[0];
     const leadData = useSelector((state) => state?.leadData?.data);
-
-
     const user = JSON.parse(localStorage.getItem('user'))
-
     const contactList = useSelector((state) => state?.contactData?.data)
-
 
     const initialValues = {
         agenda: '',
@@ -34,27 +30,34 @@ const AddMeeting = (props) => {
         attendesLead: props.leadContect === 'leadView' && props.id ? [props.id] : [],
         location: '',
         related: props.leadContect === 'contactView' ? 'Contact' : props.leadContect === 'leadView' ? 'Lead' : 'None',
-        dateTime: '',
+        timestamp: '',
         notes: '',
         createBy: user?._id,
     }
-
+    
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: MeetingSchema,
         onSubmit: (values, { resetForm }) => {
-            console.log();
-            
+            AddData()
+            resetForm()
         },
     });
     const { errors, touched, values, handleBlur, handleChange, handleSubmit, setFieldValue } = formik
 
     const AddData = async () => {
-
-    };
+        const response = await postApi('api/meeting/add', values)
+        if (response.status === 200) {
+            toast.success("Meeting added successfully");
+            onClose()
+            fetchAllData()
+        }
+    };  
 
     const fetchAllData = async () => {
-        
+        setIsLoding(true)
+        fetchData()
+        setIsLoding(false)
     }
 
     useEffect(() => {
@@ -79,9 +82,9 @@ const AddMeeting = (props) => {
                 <ModalCloseButton />
                 <ModalBody overflowY={"auto"} height={"400px"}>
                     {/* Contact Model  */}
-                    <MultiContactModel data={contactdata} isOpen={contactModelOpen} onClose={setContactModel} fieldName='attendes' setFieldValue={setFieldValue} />
+                    <MultiContactModel data={contactList} isOpen={contactModelOpen} onClose={setContactModel} fieldName='attendes' setFieldValue={setFieldValue} />
                     {/* Lead Model  */}
-                    <MultiLeadModel data={leaddata} isOpen={leadModelOpen} onClose={setLeadModel} fieldName='attendesLead' setFieldValue={setFieldValue} />
+                    <MultiLeadModel data={leadData} isOpen={leadModelOpen} onClose={setLeadModel} fieldName='attendesLead' setFieldValue={setFieldValue} />
 
                     <Grid templateColumns="repeat(12, 1fr)" gap={3}>
                         <GridItem colSpan={{ base: 12 }}>
@@ -112,8 +115,8 @@ const AddMeeting = (props) => {
                             </RadioGroup>
                             <Text mb='10px' color={'red'} fontSize='sm'> {errors.related && touched.related && errors.related}</Text>
                         </GridItem>
-                        {(values.related === "Contact" ? (contactdata?.length ?? 0) > 0 : (leaddata?.length ?? 0) > 0) && values.related &&
-
+        
+                        {(values.related === "Contact" ? (contactList?.length ?? 0) > 0 : (leadData?.length ?? 0) > 0) && values.related &&
                             <GridItem colSpan={{ base: 12 }}>
                                 <Flex alignItems={'end'} justifyContent={'space-between'} >
                                     <Text w={'100%'} >
@@ -159,13 +162,13 @@ const AddMeeting = (props) => {
                                 type='datetime-local'
                                 onChange={handleChange} onBlur={handleBlur}
                                 min={dayjs(todayTime).format('YYYY-MM-DD HH:mm')}
-                                value={values.dateTime}
-                                name="dateTime"
+                                value={values.timestamp}
+                                name="timestamp"
                                 placeholder='Date Time'
                                 fontWeight='500'
-                                borderColor={errors.dateTime && touched.dateTime ? "red.300" : null}
+                                borderColor={errors.timestamp && touched.timestamp ? "red.300" : null}
                             />
-                            <Text fontSize='sm' mb='10px' color={'red'}> {errors.dateTime && touched.dateTime && errors.dateTime}</Text>
+                            <Text fontSize='sm' mb='10px' color={'red'}> {errors.timestamp && touched.timestamp && errors.timestamp}</Text>
                         </GridItem>
                         <GridItem colSpan={{ base: 12 }}>
                             <FormLabel display='flex' ms='4px' fontSize='sm' fontWeight='500' mb='8px'>
@@ -202,6 +205,7 @@ const AddMeeting = (props) => {
         </Modal>
     )
 }
+
 
 export default AddMeeting
 

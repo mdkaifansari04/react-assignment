@@ -25,7 +25,7 @@ const AddEdit = (props) => {
     const [contactModelOpen, setContactModel] = useState(false);
     const [leadModelOpen, setLeadModel] = useState(false);
     const leadData = useSelector((state) => state?.leadData?.data);
-
+    
 
     const today = new Date().toISOString().split('T')[0];
     const todayTime = new Date().toISOString().split('.')[0];

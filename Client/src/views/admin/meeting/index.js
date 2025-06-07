@@ -91,10 +91,11 @@ const Index = () => {
     const handleDeleteMeeting = async (ids) => {
         try {
             setIsLoding(true)
-            let response = await deleteManyApi('api/meeting/deleteMany', ids)
+            let response = await deleteManyApi('api/meeting/delete-many', ids)
             if (response.status === 200) {
                 setSelectedValues([])
                 setDeleteMany(false)
+                toast.success("Meeting deleted successfully");
                 setAction((pre) => !pre)
             }
         } catch (error) {
@@ -120,8 +121,8 @@ const Index = () => {
                 isLoding={isLoding}
                 columnData={tableColumns ?? []}
                 // dataColumn={dataColumn ?? []}
-                allData={data ?? []}
-                tableData={data}
+                allData={data.filter((item) => !item.deleted) ?? []}
+                tableData={data.filter((item) => !item.deleted)}
                 searchDisplay={displaySearchData}
                 setSearchDisplay={setDisplaySearchData}
                 searchedDataOut={searchedData}
@@ -158,7 +159,7 @@ const Index = () => {
                 setGetTagValues={setGetTagValuesOutside}
                 setSearchbox={setSearchboxOutside}
             />
-            <AddMeeting setAction={setAction} isOpen={isOpen} onClose={onClose} />
+            <AddMeeting fetchData={fetchData} setAction={setAction} isOpen={isOpen} onClose={onClose} />
 
             {/* Delete model */}
             <CommonDeleteModel isOpen={deleteMany} onClose={() => setDeleteMany(false)} type='Meetings' handleDeleteData={handleDeleteMeeting} ids={selectedValues} />

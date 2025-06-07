@@ -13,6 +13,7 @@ import { deleteApi } from "services/api";
 import CommonDeleteModel from "components/commonDeleteModel";
 import { FaFilePdf } from "react-icons/fa";
 import html2pdf from "html2pdf.js";
+import { toast } from 'react-toastify';
 const View = () => {
 
     const param = useParams()
@@ -67,8 +68,10 @@ const View = () => {
         try {
             setIsLoding(true)
             let response = await deleteApi('api/meeting/delete/', params.id)
+            
             if (response.status === 200) {
                 setDeleteMany(false)
+                toast.success("Meeting deleted successfully");
                 navigate(-1)
             }
         } catch (error) {
