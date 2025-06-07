@@ -11,6 +11,9 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { MeetingSchema } from 'schema';
 import { getApi, postApi } from 'services/api';
+import { fetchContactData } from '../../../../redux/slices/contactSlice';
+import { fetchLeadData } from '../../../../redux/slices/leadSlice';
+import { useDispatch } from 'react-redux';  
 
 const AddMeeting = (props) => {
     const { onClose, isOpen, setAction, from, fetchData, view } = props
@@ -24,6 +27,7 @@ const AddMeeting = (props) => {
     const user = JSON.parse(localStorage.getItem('user'))
     const contactList = useSelector((state) => state?.contactData?.data)
 
+    const dispatch = useDispatch()
     const initialValues = {
         agenda: '',
         attendes: props.leadContect === 'contactView' && props.id ? [props.id] : [],
@@ -61,8 +65,15 @@ const AddMeeting = (props) => {
     }
 
     useEffect(() => {
-
-    }, [props.id, values.related])
+        let cd = dispatch(fetchContactData())
+        if (cd?.payload?.status === 200) {
+            setContactData(cd?.payload?.data)
+        }
+        let ld = dispatch(fetchLeadData())
+        if (ld?.payload?.status === 200) {
+            setLeadData(ld?.payload?.data)
+        }
+    }, [props.id, values.related, dispatch])
 
     const extractLabels = (selectedItems) => {
         return selectedItems.map((item) => item._id);
