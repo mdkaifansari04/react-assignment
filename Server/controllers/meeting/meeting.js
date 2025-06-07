@@ -66,8 +66,7 @@ const deleteData = async (req, res) => {
 
 const deleteMany = async (req, res) => {
   try {
-    const { ids } = req.body;
-    const result = await MeetingHistory.findByIdAndDelete({ _id: { $in: ids } }); 
+    const result = await MeetingHistory.updateMany({ _id: { $in: req.body } }, { $set: { deleted: true } }); 
     res.status(200).json(result);
   } catch (err) {
     console.error("Failed to delete :", err);
